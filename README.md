@@ -109,9 +109,8 @@ graph TB
 
 1. **Clone and setup**:
    ```bash
-   git clone <repository-url>
-   cd graphRAGvero01
-   ```
+   git clone https://github.com/kliewerdaniel/GraphRAGEval
+   cd GraphRAGEval   ```
 
 2. **One-command setup and start**:
    ```bash
@@ -461,17 +460,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **[Neo4j](https://neo4j.com/)** for the powerful graph database platform
 - **[Ollama](https://ollama.ai/)** for local LLM inference
-- **[Vero-Eval](https://github.com/your-repo/vero-eval)** for the evaluation framework
+- **[Vero-Eval](https://github.com/vero-labs-ai/vero-eval)** for the evaluation framework
 - **[Mistral AI](https://mistral.ai/)** for the Mistral language model
 - **[Next.js](https://nextjs.org/)** for the excellent React framework
 
-## 🔗 Links
-
-- **Documentation**: [docs.your-repo.com](https://docs.your-repo.com)
-- **Demo**: [demo.your-repo.com](https://demo.your-repo.com)
-- **Paper**: [GraphRAG Research Paper](https://arxiv.org/abs/XXXX.XXXX)
-- **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
-- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
 
 ---
 
