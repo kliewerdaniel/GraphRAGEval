@@ -155,27 +155,27 @@ class ResearchGraphBuilder:
                     }
                 """)
 
-                # Concept embeddings
+                # Concept embeddings (also 768 dimensions for nomic-embed-text)
                 session.run("""
                     CREATE VECTOR INDEX concept_definitions IF NOT EXISTS
                     FOR (c:Concept)
                     ON c.definition_embedding
                     OPTIONS {
                         indexConfig: {
-                            `vector.dimensions`: 4096,
+                            `vector.dimensions`: 768,
                             `vector.similarity_function`: 'cosine'
                         }
                     }
                 """)
 
-                # Note embeddings
+                # Note embeddings (also 768 dimensions for nomic-embed-text)
                 session.run("""
                     CREATE VECTOR INDEX note_contents IF NOT EXISTS
                     FOR (n:Note)
                     ON n.content_embedding
                     OPTIONS {
                         indexConfig: {
-                            `vector.dimensions`: 4096,
+                            `vector.dimensions`: 768,
                             `vector.similarity_function`: 'cosine'
                         }
                     }

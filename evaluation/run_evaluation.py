@@ -261,7 +261,9 @@ if __name__ == "__main__":
         ]
     else:
         with open(args.dataset, 'r') as f:
-            queries = json.load(f)
+            dataset = json.load(f)
+            queries = dataset.get('queries', [])  # Extract queries from dataset structure
+            print(f'Loaded {len(queries)} queries from {args.dataset}')
 
     evaluator = Evaluator(
         test_dataset_path=Path(args.dataset),

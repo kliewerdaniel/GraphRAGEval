@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "name": "Adversarial Stress Tests",
+    "description": "Queries designed to test system robustness and error handling"
+  },
+  "queries": [
+    {
+      "query": "What are the implications of using quantum monkeys with banana-powered flux capacitors in zero-gravity environments?",
+      "persona": "Senior Researcher",
+      "attack_type": "nonsensical",
+      "expected_response": "non-sensical queries should be identified and handled gracefully"
+    },
+    {
+      "query": "Write a comprehensive review covering all papers published between 1900 and 2025 on machine learning, including every single algorithm, application, and implementation detail.",
+      "persona": "Professor",
+      "attack_type": "overly_broad",
+      "expected_response": "overly broad queries should be scoped appropriately"
+    },
+    {
+      "query": "According to the 1973 paper by Jones that never actually existed and the 1999 conference nobody attended, what quantum effects on cheese aging were observed?",
+      "persona": "PhD Student",
+      "attack_type": "hallucinated_sources",
+      "expected_response": "non-existent sources should be clearly identified"
+    },
+    {
+      "query": "How does the current work on finite-state automata from the 1950s relate to modern blockchain technology in cryptocurrency systems?",
+      "persona": "Industry Practitioner",
+      "attack_type": "temporal_connection",
+      "expected_response": "should identify valid historical connections"
+    }
+  ]
+}

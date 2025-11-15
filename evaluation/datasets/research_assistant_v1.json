@@ -1,0 +1,496 @@
+{
+  "metadata": {
+    "name": "Research Assistant Test Dataset v1",
+    "description": "Comprehensive test dataset for GraphRAG research assistant evaluation",
+    "created_at": "2025-11-15T15:35:15.965118",
+    "generated_queries": 25,
+    "personas": 5,
+    "evaluation_framework": "vero-eval"
+  },
+  "personas": [
+    {
+      "name": "PhD Student",
+      "characteristics": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints"
+    },
+    {
+      "name": "Senior Researcher",
+      "characteristics": "Broad queries, interested in connections, asks about citations, publication-focused"
+    },
+    {
+      "name": "Industry Practitioner",
+      "characteristics": "Practical focus, wants applicable results, less theory, implementation details"
+    },
+    {
+      "name": "Professor",
+      "characteristics": "Teaching-focused, wants comprehensive overviews, student-friendly explanations"
+    },
+    {
+      "name": "Postdoc",
+      "characteristics": "Fast-paced, wants quick insights, methodological rigor, novelty-focused"
+    }
+  ],
+  "queries": [
+    {
+      "query": "What would happen if we increased training data?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.964719",
+      "query_id": "query_001"
+    },
+    {
+      "query": "What evidence supports the effectiveness of optimization techniques?",
+      "persona": "Postdoc",
+      "persona_description": "Fast-paced, wants quick insights, methodological rigor, novelty-focused",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.6,
+      "generated_at": "2025-11-15T15:35:15.964747",
+      "query_id": "query_002"
+    },
+    {
+      "query": "How does supervised learning differ from traditional methods?",
+      "persona": "Postdoc",
+      "persona_description": "Fast-paced, wants quick insights, methodological rigor, novelty-focused",
+      "expected_characteristics": [
+        "explanatory"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.6,
+      "generated_at": "2025-11-15T15:35:15.964766",
+      "query_id": "query_003"
+    },
+    {
+      "query": "How can few-shot learning be applied to real-world academia problems?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [
+        "explanatory"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.964785",
+      "query_id": "query_004"
+    },
+    {
+      "query": "What are the practical implications of robotics?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.964801",
+      "query_id": "query_005"
+    },
+    {
+      "query": "What would happen if we increased temperature?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.964816",
+      "query_id": "query_006"
+    },
+    {
+      "query": "What would happen if we increased number of layers?",
+      "persona": "PhD Student",
+      "persona_description": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. For further reading, consider exploring the original papers and implementing simple versions of these techniques.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.964832",
+      "query_id": "query_007"
+    },
+    {
+      "query": "How has research in neural networks evolved over the past decade?",
+      "persona": "Industry Practitioner",
+      "persona_description": "Practical focus, wants applicable results, less theory, implementation details",
+      "expected_characteristics": [
+        "explanatory"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. Production implementations typically require careful optimization for scalability and robustness.",
+      "complexity_score": 0.6,
+      "generated_at": "2025-11-15T15:35:15.964848",
+      "query_id": "query_008"
+    },
+    {
+      "query": "Can you explain that in simpler terms?",
+      "persona": "Postdoc",
+      "persona_description": "Fast-paced, wants quick insights, methodological rigor, novelty-focused",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.6,
+      "generated_at": "2025-11-15T15:35:15.964863",
+      "query_id": "query_009"
+    },
+    {
+      "query": "How does this relate to what we discussed earlier?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [
+        "explanatory"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.964879",
+      "query_id": "query_010"
+    },
+    {
+      "query": "What are some non-obvious applications of optimization techniques?",
+      "persona": "PhD Student",
+      "persona_description": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. For further reading, consider exploring the original papers and implementing simple versions of these techniques.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.964893",
+      "query_id": "query_011"
+    },
+    {
+      "query": "What are the most controversial findings in transfer learning?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.964909",
+      "query_id": "query_012"
+    },
+    {
+      "query": "How does this relate to what we discussed earlier?",
+      "persona": "Senior Researcher",
+      "persona_description": "Broad queries, interested in connections, asks about citations, publication-focused",
+      "expected_characteristics": [
+        "explanatory"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. Recent citations show increasing adoption in applied settings across various domains.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.964923",
+      "query_id": "query_013"
+    },
+    {
+      "query": "How can statistical modeling be applied to real-world finance problems?",
+      "persona": "Senior Researcher",
+      "persona_description": "Broad queries, interested in connections, asks about citations, publication-focused",
+      "expected_characteristics": [
+        "explanatory"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. Recent citations show increasing adoption in applied settings across various domains.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.964940",
+      "query_id": "query_014"
+    },
+    {
+      "query": "According to Graph Neural Networks: A Survey, what are the key findings?",
+      "persona": "PhD Student",
+      "persona_description": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. For further reading, consider exploring the original papers and implementing simple versions of these techniques.",
+      "complexity_score": 0.6,
+      "generated_at": "2025-11-15T15:35:15.964958",
+      "query_id": "query_015"
+    },
+    {
+      "query": "What are the most controversial findings in peer review process?",
+      "persona": "Postdoc",
+      "persona_description": "Fast-paced, wants quick insights, methodological rigor, novelty-focused",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.6,
+      "generated_at": "2025-11-15T15:35:15.964974",
+      "query_id": "query_016"
+    },
+    {
+      "query": "What evidence supports the effectiveness of few-shot learning?",
+      "persona": "PhD Student",
+      "persona_description": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. For further reading, consider exploring the original papers and implementing simple versions of these techniques.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.964990",
+      "query_id": "query_017"
+    },
+    {
+      "query": "Compare and contrast unsupervised learning with federated learning.",
+      "persona": "PhD Student",
+      "persona_description": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints",
+      "expected_characteristics": [
+        "comparative"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Federated learning enables training models on decentralized data without sharing raw information, preserving privacy while building global models. For further reading, consider exploring the original papers and implementing simple versions of these techniques.",
+      "complexity_score": 0.6,
+      "generated_at": "2025-11-15T15:35:15.965006",
+      "query_id": "query_018"
+    },
+    {
+      "query": "What are the current limitations of few-shot learning?",
+      "persona": "PhD Student",
+      "persona_description": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. For further reading, consider exploring the original papers and implementing simple versions of these techniques.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.965020",
+      "query_id": "query_019"
+    },
+    {
+      "query": "What methodology was used in the study about empirical validation?",
+      "persona": "PhD Student",
+      "persona_description": "Detail-oriented, asks follow-up questions, wants methodology details, budget constraints",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. For further reading, consider exploring the original papers and implementing simple versions of these techniques.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.965037",
+      "query_id": "query_020"
+    },
+    {
+      "query": "What future directions are proposed for peer review process?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.965053",
+      "query_id": "query_021"
+    },
+    {
+      "query": "How might hypothesis testing and peer review process complement each other?",
+      "persona": "Professor",
+      "persona_description": "Teaching-focused, wants comprehensive overviews, student-friendly explanations",
+      "expected_characteristics": [
+        "explanatory"
+      ],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging.",
+      "complexity_score": 0.4,
+      "generated_at": "2025-11-15T15:35:15.965070",
+      "query_id": "query_022"
+    },
+    {
+      "query": "What happens if we combine deep learning and optimization techniques in unexpected ways?",
+      "persona": "Senior Researcher",
+      "persona_description": "Broad queries, interested in connections, asks about citations, publication-focused",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. Recent citations show increasing adoption in applied settings across various domains.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.965087",
+      "query_id": "query_023"
+    },
+    {
+      "query": "What would happen if we increased training data?",
+      "persona": "Senior Researcher",
+      "persona_description": "Broad queries, interested in connections, asks about citations, publication-focused",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. Recent citations show increasing adoption in applied settings across various domains.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.965102",
+      "query_id": "query_024"
+    },
+    {
+      "query": "What connections exist between machine learning in healthcare and computational biology?",
+      "persona": "Senior Researcher",
+      "persona_description": "Broad queries, interested in connections, asks about citations, publication-focused",
+      "expected_characteristics": [],
+      "ground_truth_chunk_ids": [
+        "Military and Security Dimensions of Quantum Technologies",
+        "Attention Mechanisms in Deep Learning",
+        "Graph Neural Networks: A Survey"
+      ],
+      "reference_answer": "Based on current research, this topic involves complex interactions between multiple factors. Key findings include improved performance through advanced techniques, though practical implementations remain challenging. Recent citations show increasing adoption in applied settings across various domains.",
+      "complexity_score": 0.5,
+      "generated_at": "2025-11-15T15:35:15.965117",
+      "query_id": "query_025"
+    }
+  ],
+  "sample_papers": [
+    {
+      "title": "Military and Security Dimensions of Quantum Technologies",
+      "authors": [
+        "Michal Krelina"
+      ],
+      "abstract": "This paper explores how quantum technologies are shaping military security, including quantum encryption, sensors, and computing applications.",
+      "year": 2025,
+      "concepts": [
+        "quantum encryption",
+        "military security",
+        "defense applications"
+      ]
+    },
+    {
+      "title": "Attention Mechanisms in Deep Learning",
+      "authors": [
+        "Vaswani et al.",
+        "Bahdanau et al."
+      ],
+      "abstract": "Comprehensive overview of attention mechanisms and their role in modern neural architectures, particularly transformers.",
+      "year": 2023,
+      "concepts": [
+        "attention mechanisms",
+        "transformers",
+        "deep learning"
+      ]
+    },
+    {
+      "title": "Graph Neural Networks: A Survey",
+      "authors": [
+        "Wu et al.",
+        "Zhou et al."
+      ],
+      "abstract": "Survey of graph neural network architectures, applications, and recent advances in the field.",
+      "year": 2024,
+      "concepts": [
+        "graph neural networks",
+        "graph theory",
+        "representation learning"
+      ]
+    },
+    {
+      "title": "Federated Learning for Privacy-Preserving AI",
+      "authors": [
+        "Yang et al.",
+        "Li et al."
+      ],
+      "abstract": "Analysis of federated learning approaches for training machine learning models while preserving data privacy.",
+      "year": 2023,
+      "concepts": [
+        "federated learning",
+        "privacy preservation",
+        "distributed computing"
+      ]
+    },
+    {
+      "title": "Large Language Models in Scientific Discovery",
+      "authors": [
+        "Wang et al.",
+        "Jumper et al."
+      ],
+      "abstract": "Applications of large language models in accelerating scientific research and hypothesis generation.",
+      "year": 2024,
+      "concepts": [
+        "large language models",
+        "scientific discovery",
+        "AI in research"
+      ]
+    }
+  ]
+}
