@@ -421,37 +421,6 @@ python3 evaluation/run_evaluation.py \
   --concurrent-requests 10
 ```
 
-### Benchmark Results
-
-| Metric | Baseline | Current | Target |
-|--------|----------|---------|---------|
-| Response Accuracy | 0.72 | 0.85 | 0.90+ |
-| Retrieval Precision | 0.68 | 0.82 | 0.85+ |
-| Citation Quality | 0.65 | 0.78 | 0.85+ |
-| Average Latency | 3.2s | 1.8s | <2.0s |
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Workflow
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Run** tests: `python3 evaluation/run_evaluation.py`
-4. **Commit** changes: `git commit -m 'Add amazing feature'`
-5. **Push** to branch: `git push origin feature/amazing-feature`
-6. **Open** a Pull Request
-
-### Areas for Contribution
-
-- **Research Paper Parsing**: Support for more document formats
-- **Advanced Retrieval**: Graph algorithms, entity linking
-- **UI/UX Improvements**: Better visualization, accessibility
-- **Multi-modal Support**: Images, tables, equations
-- **Multi-language Support**: Non-English papers and queries
-- **Cloud Deployment**: AWS, GCP, Azure integration
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
