@@ -1,0 +1,16 @@
+neo4j-graphrag[ollama]
+vero-eval
+ollama
+PyPDF2
+python-dotenv
+fastapi
+uvicorn
+pydantic
+httpx
+numpy
+matplotlib
+plotly
+pandas
+redis
+pinecone-client
+python-multipart

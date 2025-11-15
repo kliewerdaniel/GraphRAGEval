@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: research-neo4j
+    ports:
+      - "7474:7474"  # Neo4j Browser
+      - "7687:7687"  # Bolt protocol
+    environment:
+      NEO4J_AUTH: neo4j/research2025
+      NEO4J_PLUGINS: '["graph-data-science"]'
+    volumes:
+      - ./neo4j-data:/data
+      - ./neo4j-logs:/logs
+    networks:
+      - research-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: research-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - research-network
+    command: redis-server --appendonly yes
+
+networks:
+  research-network:
+    driver: bridge
+
+volumes:
+  redis-data:
