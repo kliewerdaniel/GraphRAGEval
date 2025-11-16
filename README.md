@@ -1,4 +1,4 @@
-# Redbot: Research Assistant with Graph Retrieval Augmented Generation
+# GraphRAGEval: Research Assistant with Graph Retrieval Augmented Generation
 
 <div align="center">
   <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python Version">
@@ -11,9 +11,9 @@
 
 ## 🌟 Overview
 
-Redbot is an advanced Research Assistant system that leverages **Graph Retrieval Augmented Generation (GraphRAG)** to analyze and answer questions about Reddit discussions. The system ingests Reddit data into a Neo4j graph database, provides intelligent retrieval mechanisms, and uses local Large Language Models (LLMs) via Ollama for response generation.
+GraphRAGEval is an advanced Research Assistant system that leverages **Graph Retrieval Augmented Generation (GraphRAG)** to analyze and answer questions about Reddit discussions. The system ingests Reddit data into a Neo4j graph database, provides intelligent retrieval mechanisms, and uses local Large Language Models (LLMs) via Ollama for response generation.
 
-Built on the principles of GraphRAG, Redbot creates a knowledge graph from community discussions, enabling nuanced understanding of complex topics through conversational AI with built-in evaluation frameworks.
+Built on the principles of GraphRAG, GraphRAGEval creates a knowledge graph from community discussions, enabling nuanced understanding of complex topics through conversational AI with built-in evaluation frameworks.
 
 ### Key Technologies
 
@@ -59,8 +59,8 @@ Built on the principles of GraphRAG, Redbot creates a knowledge graph from commu
 
 1. **Clone and Setup**
    ```bash
-   git clone https://github.com/kliewerdaniel/redbot.git
-   cd redbot
+   git clone https://github.com/kliewerdaniel/graphrageval.git
+   cd graphrageval
    ```
 
 2. **Run Automated Setup**
@@ -323,8 +323,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## 📞 Support & Community
 
 - 📚 [Documentation](docs/)
-- 🐛 [Bug Reports](https://github.com/your-org/redbot/issues)
-- 💬 [Discussions](https://github.com/your-org/redbot/discussions)
+- 🐛 [Bug Reports](https://github.com/your-org/graphrageval/issues)
+- 💬 [Discussions](https://github.com/your-org/graphrageval/discussions)
 - 📧 Contact: your-email@example.com
 
 ---
@@ -333,7 +333,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Built with ❤️ for researchers and AI enthusiasts**
 
-[![Star](https://img.shields.io/github/stars/kliewerdaniel/redbot.svg?style=social)](https://github.com/kliewerdaniel/redbot)
-[![Fork](https://img.shields.io/github/forks/your-org/redbot.svg?style=social)](https://github.com/kliewerdaniel/redbot)
+[![Star](https://img.shields.io/github/stars/kliewerdaniel/graphrageval.svg?style=social)](https://github.com/kliewerdaniel/graphrageval)
+[![Fork](https://img.shields.io/github/forks/kliewerdaniel/graphrageval.svg?style=social)](https://github.com/kliewerdaniel/graphrageval)
 
 </div>
