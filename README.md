@@ -9,6 +9,9 @@
   <img src="https://img.shields.io/badge/FastAPI-0.104.1-009688.svg" alt="FastAPI">
 </div>
 
+![screenshot](ss.png)
+
+
 ## 🌟 Overview
 
 GraphRAGEval is an advanced Research Assistant system that leverages **Graph Retrieval Augmented Generation (GraphRAG)** to analyze and answer questions about Reddit discussions. The system ingests Reddit data into a Neo4j graph database, provides intelligent retrieval mechanisms, and uses local Large Language Models (LLMs) via Ollama for response generation.
