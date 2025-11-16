@@ -1,222 +1,235 @@
 #!/bin/bash
+# Start Reddit GraphRAG Application
+# This script sets up and starts the Reddit GraphRAG application
 
-# GraphRAG Research Assistant - Complete Startup Script
-# This script handles the complete setup and startup of the research assistant
-
-set -e  # Exit on any error
-
-echo "🚀 Starting GraphRAG Research Assistant - Complete Setup"
-echo "=========================================================="
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-check_command() {
-    if ! command -v $1 &> /dev/null; then
-        log_error "$1 is not installed. Please install it first."
-        exit 1
-    fi
-}
+echo "🚀 Starting Reddit GraphRAG setup..."
 
 # Check prerequisites
-log_info "Checking prerequisites..."
-check_command "python3"
-check_command "node"
-check_command "npm"
-check_command "ollama"
+echo "📋 Checking prerequisites..."
+command -v python3 >/dev/null 2>&1 || { echo "❌ Python3 is required but not installed. Please install Python 3.8+ first."; exit 1; }
+command -v node >/dev/null 2>&1 || { echo "❌ Node.js is required but not installed. Please install Node.js 16+ first."; exit 1; }
+command -v pip >/dev/null 2>&1 || { echo "❌ pip is required but not installed. Please install pip first."; exit 1; }
+command -v npm >/dev/null 2>&1 || { echo "❌ npm is required but not installed. Please install npm first."; exit 1; }
 
-if command -v docker-compose &> /dev/null || command -v docker &> /dev/null && docker compose version &> /dev/null; then
-    log_success "Docker/Docker Compose found"
-else
-    log_warning "Docker Compose not found - will skip service startup"
-    SKIP_DOCKER=true
-fi
-
-# Set up Python environment
-log_info "Setting up Python environment..."
-if [ ! -d "venv" ]; then
-    log_info "Creating virtual environment..."
-    python3 -m venv venv
-else
-    log_success "Virtual environment already exists"
-fi
-
-source venv/bin/activate
-log_info "Activating virtual environment and installing dependencies..."
-pip install --quiet -r requirements.txt
-
-# Start Docker services (if available)
-if [ "$SKIP_DOCKER" != true ]; then
-    log_info "Starting Docker services (Neo4j + Redis)..."
-    if command -v docker-compose &> /dev/null; then
-        docker-compose up -d
-    else
-        docker compose up -d
+# Function to check if port is available
+check_port() {
+    local port=$1
+    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null ; then
+        echo "❌ Port $port is already in use. Please stop the service using that port or choose a different port."
+        return 1
     fi
+    return 0
+}
 
-    # Wait for services to be ready
-    log_info "Waiting for services to start..."
-    sleep 10
+# Check if required ports are available
+check_port 3001 || exit 1
+# Frontend typically runs on 3000 by default
+check_port 3000 || check_port 3001 || exit 1
+check_port 8000 || exit 1
 
-    # Test Neo4j connection
-    log_info "Testing Neo4j connection..."
-    python3 -c "
-import sys
-from neo4j import GraphDatabase
-import os
-import time
+# Backend setup
+echo "🐍 Setting up Python backend..."
 
-NEO4J_URI = os.getenv('NEO4J_URI', 'bolt://localhost:7687')
-NEO4J_USER = os.getenv('NEO4J_USERNAME', 'neo4j')
-NEO4J_PASSWORD = os.getenv('NEO4J_PASSWORD', 'research2025')
+# Install Python dependencies
+echo "📦 Installing Python dependencies..."
+pip install neo4j-graphrag[ollama] ollama PyPDF2 python-dotenv fastapi uvicorn pydantic httpx numpy matplotlib plotly pandas redis pinecone-client python-multipart scikit-learn sentence-transformers nltk rouge_score || {
+    echo "❌ Failed to install Python dependencies. Please check your Python/pip installation."
+    exit 1
+}
 
-for attempt in range(10):
-    try:
-        driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
-        with driver.session() as session:
-            result = session.run('RETURN 1 as num')
-        driver.close()
-        print('Neo4j connection successful')
-        sys.exit(0)
-    except Exception as e:
-        print(f'Neo4j connection attempt {attempt + 1} failed: {e}')
-        time.sleep(5)
+# Check if required services are running
+echo "🔍 Checking required services..."
 
-print('Neo4j connection failed after 10 attempts')
-sys.exit(1)
-    " || {
-        log_error "Neo4j connection failed"
-        exit 1
-    }
-else
-    log_warning "Skipping Docker services - Neo4j and Redis must be running manually"
+# Check if Neo4j is running (optional - user may need to start it)
+if ! nc -z localhost 7687 2>/dev/null; then
+    echo "⚠️ Neo4j does not appear to be running on port 7687"
+    echo "   Please start Neo4j before running this script:"
+    echo "   docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=neo4j/password neo4j:latest"
+    echo "   Or use your existing Neo4j installation"
+    echo ""
 fi
 
-# Test Ollama models
-log_info "Checking Ollama models..."
-ollama list | grep -q "mistral" || {
-    log_info "Pulling Mistral model..."
-    ollama pull mistral
-}
+# Check if Ollama is running
+if ! nc -z localhost 11434 2>/dev/null; then
+    echo "⚠️ Ollama does not appear to be running on port 11434"
+    echo "   Please start Ollama and ensure models are pulled:"
+    echo "   ollama serve &"
+    echo "   ollama pull llama3.2:3b"
+    echo "   ollama pull mxbai-embed-large:latest"
+    echo ""
+fi
 
-ollama list | grep -q "nomic-embed-text" || {
-    log_info "Pulling nomic-embed-text model..."
-    ollama pull nomic-embed-text
-}
+# Data ingestion check
+echo "📊 Checking data ingestion..."
+if [ ! -d "../reddit_export" ]; then
+    echo "❌ reddit_export directory not found in parent directory"
+    echo "   Please ensure the reddit_export folder exists with Reddit markdown files"
+    exit 1
+fi
 
-log_success "Ollama models ready"
+# Check if database is already populated
+echo "🔍 Checking database status..."
+python3 -c "
+import sys
+try:
+    from scripts.reddit_retriever import RedditRetriever
+    retriever = RedditRetriever()
+    result = retriever.retriever.driver.session().run('MATCH (r:RedditContent) RETURN count(r) as count').single()
+    count = result['count'] if result else 0
+    print(f'Found {count} Reddit content nodes in database')
+    if count == 0:
+        print('Database appears empty - will run ingestion')
+        sys.exit(1)
+    else:
+        print('Database already populated - skipping ingestion')
+        sys.exit(0)
+except Exception as e:
+    print(f'Error checking database: {e}')
+    print('Will attempt to run ingestion')
+    sys.exit(1)
+" 2>/dev/null
 
-# Set up database indexes
-log_info "Setting up Neo4j schema and indexes..."
-python3 scripts/ingest_research_data.py --setup-indexes 2>/dev/null || log_warning "Index setup may have issues - check Neo4j connection"
+INGESTION_NEEDED=$?
 
-# Generate test datasets
-log_info "Generating vero-eval test datasets..."
-python3 evaluation/generate_test_dataset.py --queries 25 --include-stress-tests
+if [ $INGESTION_NEEDED -eq 1 ]; then
+    echo "📥 Running Reddit data ingestion..."
+    if ! python3 scripts/ingest_reddit_data.py --directory ../reddit_export --setup-indexes; then
+        echo "❌ Data ingestion failed. Please check your Neo4j connection and try again."
+        exit 1
+    fi
+    echo "✅ Data ingestion completed successfully"
+else
+    echo "✅ Database already contains data - skipping ingestion"
+fi
 
-# Ingest sample data
-log_info "Ingesting sample research papers..."
-mkdir -p data/sample_papers
-python3 scripts/ingest_research_data.py --directory data/research_papers
+# Frontend setup
+echo "⚛️ Setting up Next.js frontend..."
 
-# Run initial evaluation
-log_info "Running initial system evaluation..."
-python3 evaluation/run_evaluation.py --dataset evaluation/datasets/research_assistant_v1.json --output evaluation/results/startup_evaluation.json
+# Check if frontend directory exists
+if [ ! -d "frontend" ]; then
+    echo "❌ Frontend directory not found. Please ensure the frontend folder exists."
+    exit 1
+fi
 
-# Start FastAPI backend in background
-log_info "Starting FastAPI backend..."
-python3 main.py &
-BACKEND_PID=$!
-log_success "Backend started (PID: $BACKEND_PID)"
-
-# Wait for backend to be ready
-sleep 5
-curl -s http://localhost:8000/api/health > /dev/null || {
-    log_warning "Backend health check failed - it may still be starting"
-}
-
-# Build and start frontend
-log_info "Building and starting Next.js frontend..."
 cd frontend
-npm install --silent
 
-# Build for production
-log_info "Building frontend for production..."
-npm run build
+# Install Node.js dependencies
+echo "📦 Installing Node.js dependencies..."
+if ! npm install --force; then
+    echo "❌ Failed to install Node.js dependencies. Please check your Node.js/npm installation."
+    exit 1
+fi
 
-# Start frontend in background
-log_info "Starting frontend server..."
-npm start &
-FRONTEND_PID=$!
-log_success "Frontend started (PID: $FRONTEND_PID)"
+# Check if .env exists
+if [ ! -f ".env" ]; then
+    echo "⚠️ .env file not found in frontend directory"
+    echo "   Please create frontend/.env with appropriate configuration"
+    echo "   You can use the .env.example as a template"
+fi
+
 cd ..
 
-echo ""
-echo "🎉 GraphRAG Research Assistant is now running!"
-echo "=========================================================="
-echo ""
-echo "📊 System Status:"
-echo "   ✅ Python environment: Active"
-echo "   ✅ Neo4j database: $(docker ps | grep -q neo4j && echo "Running" || echo "Not detected")"
-echo "   ✅ Redis cache: $(docker ps | grep -q redis && echo "Running" || echo "Not detected")"
-echo "   ✅ Ollama LLM: Ready"
-echo "   ✅ Research papers: $(python3 -c "
-from neo4j import GraphDatabase
-import os
-try:
-    driver = GraphDatabase.driver(
-        os.getenv('NEO4J_URI', 'bolt://localhost:7687'),
-        auth=('neo4j', 'research2025')
-    )
-    with driver.session() as session:
-        result = session.run('MATCH (p:Paper) RETURN count(p) as count')
-        count = result.single()['count']
-        print(f'{count} indexed')
-except:
-    print('Connection failed')
-driver.close() 2>/dev/null
-")"
-echo ""
-echo "🌐 Access Points:"
-echo "   🖥️  Frontend:     http://localhost:3000"
-echo "   🔌 Backend API:  http://localhost:8000"
-echo "   📊 Neo4j Browser: http://localhost:7474"
-echo ""
-echo "📈 Monitoring:"
-echo "   📊 Evaluation Results: evaluation/results/"
-echo "   📋 System Logs: Available in terminal"
-echo ""
-echo "🛑 To stop all services:"
-echo "   kill $BACKEND_PID $FRONTEND_PID"
-echo "   docker-compose down (if using Docker)"
-echo ""
-echo "💡 Next steps:"
-echo "   1. Open http://localhost:3000 in your browser"
-echo "   2. Ask questions about research in the chat interface"
-echo "   3. Add more PDF papers to data/research_papers/"
-echo "   4. Run evaluations: python evaluation/run_evaluation.py"
-echo ""
-log_success "Setup complete! System is ready for research queries."
+# Start services in background
+echo "🌐 Starting services..."
 
-# Keep the script running to show logs
-wait $BACKEND_PID $FRONTEND_PID 2>/dev/null
+# Start FastAPI backend
+echo "🐍 Starting FastAPI backend on port 8000..."
+python3 main.py &
+BACKEND_PID=$!
+
+# Wait for backend to start
+echo "⏳ Waiting for backend to start..."
+BACKEND_READY=false
+for i in {1..30}; do
+    echo "   Checking backend (attempt $i/30)..."
+    if curl -s --max-time 5 http://localhost:8000/api/health > /dev/null 2>&1; then
+        echo "✅ Backend is ready!"
+        BACKEND_READY=true
+        break
+    fi
+    sleep 2
+done
+
+if [ "$BACKEND_READY" = false ]; then
+    echo "❌ Backend failed to start within expected time"
+    kill $BACKEND_PID 2>/dev/null || true
+    exit 1
+fi
+
+# Start Next.js frontend
+echo "⚛️ Starting Next.js frontend on port 3001..."
+cd frontend
+npm run dev &
+FRONTEND_PID=$!
+cd ..
+
+# Wait for frontend to start
+echo "⏳ Waiting for frontend to start..."
+FRONTEND_READY=false
+for i in {1..20}; do
+    echo "   Checking frontend (attempt $i/20)..."
+    if curl -s --max-time 5 http://localhost:3001 > /dev/null 2>&1; then
+        echo "✅ Frontend is ready!"
+        FRONTEND_READY=true
+        break
+    fi
+    sleep 2
+done
+
+if [ "$FRONTEND_READY" = false ]; then
+    echo "❌ Frontend failed to start within expected time"
+    kill $BACKEND_PID 2>/dev/null || true
+    kill $FRONTEND_PID 2>/dev/null || true
+    exit 1
+fi
+
+echo ""
+echo "🎉 Reddit GraphRAG application is running successfully!"
+echo ""
+echo "🌐 Frontend (Next.js): http://localhost:3000 (or 3001)"
+echo "🔧 Backend API: http://localhost:8000"
+echo "📚 API Documentation: http://localhost:8000/docs"
+echo ""
+echo "📊 Database Status:"
+python3 -c "
+try:
+    from scripts.reddit_retriever import RedditRetriever
+    retriever = RedditRetriever()
+    result = retriever.retriever.driver.session().run('MATCH (r:RedditContent) RETURN count(r) as count').single()
+    count = result['count'] if result else 0
+    print(f'   • Reddit contents: {count}')
+    result = retriever.retriever.driver.session().run('MATCH (u:RedditUser) RETURN count(u) as count').single()
+    count = result['count'] if result else 0
+    print(f'   • Users indexed: {count}')
+    result = retriever.retriever.driver.session().run('MATCH (s:Subreddit) RETURN count(s) as count').single()
+    count = result['count'] if result else 0
+    print(f'   • Subreddits: {count}')
+    result = retriever.retriever.driver.session().run('MATCH (t:Topic) RETURN count(t) as count').single()
+    count = result['count'] if result else 0
+    print(f'   • Topics identified: {count}')
+except Exception as e:
+    print(f'   • Error checking database: {e}')
+" 2>/dev/null
+echo ""
+echo "🛑 Press Ctrl+C to stop all services"
+echo ""
+echo "💡 Try asking questions like:"
+echo "   • 'What do people think about AI safety?'"
+echo "   • 'Show me discussions about machine learning in r/MachineLearning'"
+echo "   • 'What are the main opinions on GPT models?'"
+
+# Function to cleanup processes on exit
+cleanup() {
+    echo ""
+    echo "🛑 Stopping services..."
+    kill $BACKEND_PID 2>/dev/null || true
+    kill $FRONTEND_PID 2>/dev/null || true
+    echo "✅ Services stopped. Goodbye!"
+    exit 0
+}
+
+# Set trap to cleanup on script termination
+trap cleanup INT TERM
+
+# Wait for either process to exit
+wait $BACKEND_PID $FRONTEND_PID

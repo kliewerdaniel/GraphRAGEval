@@ -1,441 +1,339 @@
-# GraphRAG Research Assistant
+# Redbot: Research Assistant with Graph Retrieval Augmented Generation
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Next.js](https://img.shields.io/badge/Next.js-16.0+-black.svg)](https://nextjs.org/)
-[![Neo4j](https://img.shields.io/badge/Neo4j-5.x-00ADD8.svg)](https://neo4j.com/)
-[![Vero Eval](https://img.shields.io/badge/Vero--Eval-Latest-orange.svg)](https://github.com/vero-labs-ai/vero-eval)
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python Version">
+  <img src="https://img.shields.io/badge/Neo4j-Latest-red.svg" alt="Neo4j">
+  <img src="https://img.shields.io/badge/Ollama-Models-green.svg" alt="Ollama">
+  <img src="https://img.shields.io/badge/React-19.0-blue.svg" alt="React">
+  <img src="https://img.shields.io/badge/Next.js-16.0-black.svg" alt="Next.js">
+  <img src="https://img.shields.io/badge/FastAPI-0.104.1-009688.svg" alt="FastAPI">
+</div>
 
-An advanced **Graph Retrieval-Augmented Generation (GraphRAG)** system for academic research assistance. Combines graph database relationships, local LLM inference, and reinforcement learning from human feedback (RLHF) to provide contextually aware, factually accurate responses to research queries.
+## 🌟 Overview
 
-## ✨ Key Features
+Redbot is an advanced Research Assistant system that leverages **Graph Retrieval Augmented Generation (GraphRAG)** to analyze and answer questions about Reddit discussions. The system ingests Reddit data into a Neo4j graph database, provides intelligent retrieval mechanisms, and uses local Large Language Models (LLMs) via Ollama for response generation.
 
-- **🕸️ Graph-Powered RAG**: Neo4j graph database enables structural understanding of research relationships, concepts, and citations
-- **🧠 Persona-Based Reasoning**: Dynamic personas with RLHF optimization adapt response style and quality thresholds
-- **🔍 Hybrid Retrieval**: Combines vector embeddings (nomic-embed-text) with graph traversal for superior context retrieval
-- **💾 Local LLM Inference**: Ollama integration ensures privacy and offline capability with models like Mistral
-- **📊 Comprehensive Evaluation**: Built-in vero-eval framework for automated quality assessment and benchmarking
-- **🌐 Modern Web Interface**: Next.js 16 frontend with real-time chat and research paper visualization
-- **⚡ Production Ready**: FastAPI backend with Redis caching, Docker orchestration, and scalable architecture
-- **🔧 Extensible Design**: Modular architecture supports custom retrievers, personas, and evaluation metrics
+Built on the principles of GraphRAG, Redbot creates a knowledge graph from community discussions, enabling nuanced understanding of complex topics through conversational AI with built-in evaluation frameworks.
 
-## 🏗️ Architecture
+### Key Technologies
 
-```mermaid
-graph TB
-    subgraph "Web Frontend"
-        Next[Next.js React App]
-        Chat[Chat Interface]
-        Status[System Status]
-    end
+- **Graph Database**: Neo4j with vector embeddings and graph structure
+- **Retrieval**: Hybrid retrieval combining semantic similarity and graph relationships
+- **LLM Integration**: Local models via Ollama (Mistral, Llama, etc.)
+- **Reinforcement Learning**: RLHF-tuned reasoning agents for adaptive behavior
+- **Evaluation Framework**: Comprehensive vero-eval metrics suite
+- **Frontend**: Modern React/Next.js interface with real-time chat
+- **Backend**: FastAPI for high-performance serving
 
-    subgraph "API Backend"
-        FastAPI[FastAPI Server]
-        CORS[CORS Middleware]
+## ⚡ Features
 
-        subgraph "Core Modules"
-            Agent[Persona Reasoning Agent]
-            Retriever[Hybrid Retriever]
-            Ingest[Research Graph Builder]
-            Eval[Evaluation Engine]
-        end
+### Core Capabilities
 
-        subgraph "RLHF System"
-            Persona[Persona Configuration]
-            Thresholds[Dynamic Thresholds]
-            Feedback[Quality Grading]
-        end
-    end
+- 🤖 **Intelligent Chat Assistant**: Context-aware conversations about Reddit discussions
+- 🔍 **Graph-Based Retrieval**: Retrieve relevant discussions through graph relationships and similarity
+- 📊 **Performance Evaluation**: Built-in evaluation suite with 10+ metrics including BERTScore, ROUGE, Faithfulness
+- 🎭 **Adaptive Personas**: RLHF-tuned agents that learn from interaction quality
+- 📈 **Knowledge Graph**: Structured representation of Reddit communities and discussions
+- 🐳 **Containerized Deployment**: Docker Compose for easy local setup
+- 🎨 **Modern UI**: Beautiful Next.js frontend with dark/light themes
 
-    subgraph "Data Layer"
-        Neo4j[(Neo4j Graph DB<br/>Papers & Relationships)]
-        Redis[(Redis Cache<br/>Embeddings & Session)]
-        Ollama[(Ollama LLM<br/>Mistral Model)]
-    end
+### Technical Highlights
 
-    subgraph "Evaluation"
-        VeroEval[Vero-Eval Framework]
-        Datasets[Test Datasets]
-        Results[Evaluation Results]
-        Metrics[Quality Metrics]
-    end
-
-    Next --> FastAPI
-    FastAPI --> Agent
-    FastAPI --> Retriever
-    FastAPI --> Ingest
-    FastAPI --> Eval
-
-    Agent --> Persona
-    Agent --> Ollama
-    Retriever --> Neo4j
-    Retriever --> Redis
-    Ingest --> Neo4j
-    Eval --> Datasets
-
-    VeroEval --> Metrics
-    Metrics --> Results
-    Agent -.-> Thresholds
-    Thresholds -.-> Feedback
-
-    classDef frontend fill:#e1f5fe,stroke:#01579b
-    classDef backend fill:#f3e5f5,stroke:#4a148c
-    classDef data fill:#e8f5e8,stroke:#1b5e20
-    classDef eval fill:#fff3e0,stroke:#e65100
-
-    class Next,Chat,Status frontend
-    class FastAPI,CORS,Agent,Retriever,Ingest,Eval backend
-    class Neo4j,Redis,Ollama data
-    class VeroEval,Datasets,Results,Metrics eval
-```
-
-## 📋 Prerequisites
-
-- **Python 3.9+** with pip
-- **Node.js 18+** and npm
-- **Docker & Docker Compose** (for database services)
-- **[Ollama](https://ollama.ai/)** for local LLM inference
-- **4GB+ RAM** recommended
-
-### 🔧 System Requirements
-
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| RAM | 4GB | 8GB+ |
-| Storage | 10GB | 50GB+ |
-| CPU | 2 cores | 4+ cores |
+- **Hybrid Retrieval**: Combines vector similarity (Redis) and graph traversals (Neo4j)
+- **Real-time RLHF**: Agents adapt response quality based on user feedback
+- **Multi-modal Evaluation**: Coverage, faithfulness, relevance, and ranking metrics
+- **Session Management**: Persistent chat history with context tracking
+- **Background Processing**: Async ingestion and evaluation jobs
+- **Local First**: No cloud dependencies - runs entirely on your machine
 
 ## 🚀 Quick Start
 
-1. **Clone and setup**:
+### Prerequisites
+
+- **Python 3.9+** with pip
+- **Docker & Docker Compose** for Neo4j and Redis
+- **Ollama** for LLM serving (auto-installed via setup script)
+- **Node.js 18+** for frontend (optional)
+
+### Installation
+
+1. **Clone and Setup**
    ```bash
-   git clone https://github.com/kliewerdaniel/GraphRAGEval
-   cd GraphRAGEval   ```
-
-2. **One-command setup and start**:
-   ```bash
-   ./start.sh
-   ```
-   This will:
-   - Install dependencies
-   - Start Neo4j and Redis via Docker
-   - Pull required Ollama models
-   - Set up database schema
-   - Start FastAPI backend and Next.js frontend
-   - Run initial evaluation
-
-3. **Open your browser**: [http://localhost:3000](http://localhost:3000)
-
-4. **Ask research questions** through the chat interface!
-
-## 📦 Installation
-
-### Option 1: Automated Setup (Recommended)
-
-```bash
-# Complete automated setup
-./setup.sh
-
-# Start all services
-./start.sh
-```
-
-### Option 2: Manual Installation
-
-1. **Backend Setup**:
-   ```bash
-   # Create virtual environment
-   python3 -m venv venv
-   source venv/bin/activate
-
-   # Install Python dependencies
-   pip install -r requirements.txt
+   git clone https://github.com/kliewerdaniel/redbot.git
+   cd redbot
    ```
 
-2. **Frontend Setup**:
+2. **Run Automated Setup**
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+   This installs dependencies, starts Docker services, pulls Ollama models, and prepares the database.
+
+3. **Start the Backend**
+   ```bash
+   python main.py
+   ```
+   The FastAPI server will start on `http://localhost:8000`
+
+4. **(Optional) Start the Frontend**
    ```bash
    cd frontend
    npm install
-   npm run build
-   cd ..
+   npm run dev
    ```
+   Opens at `http://localhost:3000`
 
-3. **Services Setup**:
-   ```bash
-   # Start databases
-   docker-compose up -d
+5. **Access Interfaces**
+   - **Web UI**: `http://localhost:3000`
+   - **API Docs**: `http://localhost:8000/docs`
+   - **Neo4j Browser**: `http://localhost:7474` (neo4j/research2025)
+   - **LLM Playground**: `http://localhost:11434` (Ollama)
 
-   # Pull LLM models
-   ollama pull mistral
-   ollama pull nomic-embed-text
-   ```
+### Sample Reddit Data
 
-4. **Database Schema**:
-   ```bash
-   # Set up Neo4j indexes
-   python3 scripts/ingest_research_data.py --setup-indexes
-   ```
+The system includes sample Reddit export data. To ingest new data:
 
-## 💬 Usage
-
-### Basic Usage
-
-**Via Web Interface**:
-- Navigate to [http://localhost:3000](http://localhost:3000)
-- Enter research queries in the chat interface
-- View sources, relevance scores, and retrieval methods
-
-**Via API**:
 ```bash
-# Health check
-curl http://localhost:8000/api/health
-
-# Chat endpoint
-curl -X POST http://localhost:8000/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"query": "What are the main approaches to attention mechanisms in deep learning?", "chat_history": []}'
-
-# Search papers
-curl http://localhost:8000/api/search?query=transformer%20models&limit=5
-
-# System status
-curl http://localhost:8000/api/status
+# Ingest additional Reddit exports
+python scripts/ingest_reddit_data.py --input ./your_reddit_export/
 ```
 
-**Via Python Script**:
+## 📖 Usage
+
+### Chat Interface
+
+Ask questions about Reddit discussions:
+
+```
+What do AI researchers think about the future of AGI?
+```
+
+The system will:
+1. Analyze your query for discussion-relevance
+2. Retrieve similar Reddit threads using hybrid graph search
+3. Generate responses citing specific users and subreddits
+4. Adapt behavior based on response quality
+
+### API Endpoints
+
 ```python
-from scripts.reasoning_agent import PersonaReasoningAgent
+# Chat endpoint
+response = requests.post("http://localhost:8000/api/chat", json={
+  "query": "Your question here",
+  "session_id": "optional-session-id"
+})
 
-agent = PersonaReasoningAgent()
-result = agent.generate_response("Explain the transformer architecture")
+# Search endpoint
+results = requests.get("http://localhost:8000/api/search", params={
+  "query": "search term",
+  "limit": 10
+})
 
-print(f"Response: {result['response']}")
-print(f"Quality Score: {result['quality_grade']}")
-print(f"Sources: {len(result['context_used'])} papers")
+# Evaluation
+results = requests.post("http://localhost:8000/api/evaluate", json={
+  "dataset_path": "custom_dataset.json"
+})
 ```
 
-### Advanced Features
+See `/api/docs` for complete API documentation.
 
-#### Adding Research Papers
+### Command Line
 
 ```bash
-# Copy PDFs to data directory
-cp your_papers/*.pdf data/research_papers/
+# Test reasoning agent
+python scripts/reddit_reasoning_agent.py --query "What are people's opinions on AI alignment?"
 
-# Ingest into graph database
-python3 scripts/ingest_research_data.py --directory data/research_papers
+# Run evaluation
+python evaluation/run_evaluation.py
+
+# Ingest data
+python scripts/ingest_reddit_data.py --input ./reddit_export/
 ```
 
-#### Running Evaluations
+## 🏗️ Architecture
 
-```bash
-# Evaluate with default test set
-python3 evaluation/run_evaluation.py
-
-# Evaluate with custom dataset
-python3 evaluation/run_evaluation.py \
-  --dataset evaluation/datasets/your_custom_dataset.json \
-  --output evaluation/results/custom_eval.json
-
-# Generate new test dataset
-python3 evaluation/generate_test_dataset.py \
-  --queries 100 \
-  --include-stress-tests \
-  --output evaluation/datasets/stress_test_v1.json
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Next.js UI    │    │   FastAPI        │    │   Neo4j Graph   │
+│                 │◄──►│   Backend        │◄──►│   Database      │
+│ - Chat Interface│    │                 │    │                 │
+│ - Real-time     │    │ /api/chat        │    │ - Reddit Nodes  │
+│ - Progress      │    │ /api/search      │    │ - Comment Edges │
+└─────────────────┘    │ /api/evaluate    │    │ - Vector Indexes│
+                       └─────────────────┘    └─────────────────┘
+                             │     ▲                    │
+                             │     │                    │
+                       ┌─────────────────┐    ┌─────────────────┐
+                       │   Ollama LLMs   │    │   Redis Cache    │
+                       │                 │    │                 │
+                       │ - Local Models  │    │ - Embeddings     │
+                       │ - RLHF Agents   │    │ - Session Data   │
+                       └─────────────────┘    └─────────────────┘
+                                   ▲
+                                   │
+                       ┌─────────────────┐
+                       │  vero-eval      │
+                       │  Evaluation     │
+                       │                 │
+                       │ - 10+ Metrics   │
+                       │ - Trace Logging │
+                       │ - Performance   │
+                       └─────────────────┘
 ```
 
-#### Custom Persona Configuration
+### Components
 
-Edit `data/persona.json`:
-```json
-{
-  "name": "Expert Researcher",
-  "rlhf_thresholds": {
-    "retrieval_required": 0.8,
-    "citation_requirement": 0.9,
-    "formality_level": 0.8,
-    "technical_detail_level": 0.9
-  }
-}
-```
+#### Retrieval Layer
+- **Graph Traversals**: Explore Reddit discussion networks
+- **Vector Similarity**: Redis-powered embedding search
+- **Hybrid Scoring**: Combines relevance and relationship strength
 
-## ⚙️ Configuration
+#### Generation Layer
+- **Persona Agents**: RLHF-tuned response generation
+- **Context Integration**: Citations and discussion insights
+- **Adaptive Learning**: Behavior adjustment based on feedback
+
+#### Evaluation Framework
+- **Retrieval Metrics**: Precision@K, Recall@K, Sufficiency
+- **Generation Metrics**: Faithfulness, BERTScore, ROUGE
+- **Ranking Metrics**: MRR, MAP, NDCG
+- **Custom Metrics**: Discussion insight quality
+
+## 🔧 Configuration
 
 ### Environment Variables
 
-Create a `.env` file or set environment variables:
-
 ```bash
-# Database
+# Neo4j Configuration
 NEO4J_URI=bolt://localhost:7687
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=research2025
 
-# Caching
+# Redis Configuration
 REDIS_URL=redis://localhost:6379
 
-# LLM
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=mistral
+# Ollama Configuration
+OLLAMA_HOST=http://localhost:11434
 
-# API
+# API Configuration
 PORT=8000
-CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-
-# Logging
-LOG_LEVEL=INFO
 ```
 
-### Customizing Retrieval
+### Persona Configuration
 
-Modify `scripts/hybrid_retriever.py` to adjust:
-- Vector similarity thresholds
-- Graph traversal depth
-- Weighted combination of retrieval methods
-- Caching strategies
+Modify `data/persona.json` to adjust agent behavior:
 
-## 📡 API Documentation
-
-### Endpoints
-
-#### Core Endpoints
-
-- `GET /api/health` - Health check
-- `POST /api/chat` - Main chat interface with GraphRAG
-- `GET /api/search` - Direct paper search
-- `POST /api/ingest` - Background paper ingestion
-- `POST /api/evaluate` - Run evaluation suite
-
-#### System Management
-
-- `GET /api/status` - Comprehensive system status
-- `GET /api/evaluation-results` - Latest evaluation metrics
-
-### Request/Response Examples
-
-**Chat Request**:
 ```json
 {
-  "query": "How do BERT models handle contextual embeddings?",
-  "chat_history": [
-    {"role": "user", "content": "Explain transformer models"},
-    {"role": "assistant", "content": "Transformers use self-attention..."}
-  ],
-  "persona_override": null
+  "rlhf_thresholds": {
+    "retrieval_required": 0.6,
+    "minimum_context_overlap": 0.3,
+    "formality_level": 0.6,
+    "technical_detail_level": 0.7,
+    "citation_requirement": 0.8
+  }
 }
 ```
 
-**Chat Response**:
+## 📊 Evaluation & Benchmarks
+
+The system includes comprehensive evaluation capabilities:
+
+### Running Evaluation
+
+```bash
+python evaluation/run_evaluation.py --dataset evaluation/datasets/your_dataset.json
+```
+
+### Sample Metrics Output
+
 ```json
 {
-  "response": "BERT (Bidirectional Encoder Representations from Transformers) handles contextual embeddings through its bidirectional training approach...",
-  "context_used": [...],
-  "quality_grade": 0.87,
-  "retrieval_method": "hybrid",
-  "retrieval_performed": true,
-  "sources": [...]
+  "retrieval": {
+    "PrecisionMetric_summary": {"mean": 0.783, "std": 0.142},
+    "RecallMetric_summary": {"mean": 0.654, "std": 0.098},
+    "SufficiencyMetric_summary": {"mean": 0.812, "std": 0.076}
+  },
+  "generation": {
+    "FaithfulnessMetric_summary": {"mean": 0.894, "std": 0.054},
+    "BERTScoreMetric_summary": {"mean": 0.872, "std": 0.061}
+  }
 }
 ```
 
-## 🛠️ Development
+### Custom Datasets
 
-### Project Structure
+Create evaluation datasets:
 
-```
-graphRAGvero01/
-├── main.py                    # FastAPI application entry point
-├── scripts/
-│   ├── reasoning_agent.py     # Core RLHF-enabled reasoning agent
-│   ├── hybrid_retriever.py    # Graph + vector retrieval logic
-│   ├── graph_schema.py        # Neo4j graph schema definitions
-│   └── ingest_research_data.py # PDF ingestion pipeline
-├── frontend/                  # Next.js React application
-│   ├── src/
-│   │   ├── app/              # Next.js 13+ app router
-│   │   ├── components/       # React components
-│   │   └── styles/           # CSS styles
-│   ├── package.json
-│   └── next.config.ts
-├── evaluation/                # Vero-eval testing framework
-│   ├── run_evaluation.py     # Main evaluation runner
-│   ├── metrics.py            # Quality assessment metrics
-│   ├── generate_test_dataset.py # Synthetic test data generation
-│   └── datasets/             # Pre-defined test datasets
-├── data/                     # Research papers and configuration
-│   ├── research_papers/      # PDF storage
-│   ├── persona.json         # RLHF persona configuration
-│   └── sample_papers/       # Sample datasets
-├── docker-compose.yml        # Multi-service orchestration
-├── requirements.txt          # Python dependencies
-├── setup.sh                  # Automated setup script
-└── start.sh                  # Complete startup script
+```json
+{
+  "queries": [
+    {
+      "query": "Sample research question",
+      "persona": "researcher",
+      "ground_truth_chunk_ids": ["doc1", "doc2"],
+      "reference_answer": "Expected answer",
+      "complexity_score": 0.7
+    }
+  ]
+}
 ```
 
-### Running Tests
+## 🧪 Testing
+
+### Unit Tests
 
 ```bash
-# Backend tests
-python3 -m pytest
-
-# Frontend tests
-cd frontend
-npm test
-
-# End-to-end evaluation
-python3 evaluation/run_evaluation.py --comprehensive
+python -m pytest
 ```
 
-### Adding New Features
-
-1. **Custom Retriever**: Extend `scripts/hybrid_retriever.py`
-2. **New Persona**: Update `data/persona.json`
-3. **UI Components**: Add to `frontend/src/components/`
-4. **API Endpoints**: Modify `main.py`
-
-### Debugging
-
-- **View Neo4j Browser**: [http://localhost:7474](http://localhost:7474)
-- **Check API Logs**: Backend logs in terminal
-- **System Status**: GET `/api/status`
-
-## 📊 Evaluation Framework
-
-### Metrics
-
-- **Retrieval Quality**: Precision, Recall, F1-Score, MAP
-- **Response Quality**: Factual accuracy, Completeness, Citation quality
-- **System Performance**: Latency, Throughput, Memory usage
-- **RLHF Scores**: Persona effectiveness, Adaptation rate
-
-### Running Benchmarks
+### Integration Tests
 
 ```bash
-# Full evaluation suite
-python3 evaluation/run_evaluation.py \
-  --dataset evaluation/datasets/research_assistant_v1.json \
-  --metrics accuracy,latency,relevance
-
-# Stress testing
-python3 evaluation/run_evaluation.py \
-  --dataset evaluation/datasets/stress_tests.json \
-  --concurrent-requests 10
+./test.sh
 ```
 
-## 📄 License
+### Load Testing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Test with synthetic datasets and monitor resource usage through the evaluation dashboard.
+
+### Development Setup
+
+```bash
+# Full development environment
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# Run with hot reload
+python main.py --reload
+```
+
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **[Neo4j](https://neo4j.com/)** for the powerful graph database platform
-- **[Ollama](https://ollama.ai/)** for local LLM inference
-- **[Vero-Eval](https://github.com/vero-labs-ai/vero-eval)** for the evaluation framework
-- **[Mistral AI](https://mistral.ai/)** for the Mistral language model
-- **[Next.js](https://nextjs.org/)** for the excellent React framework
+- **GraphRAG**: Inspired by Microsoft's Graph Retrieval Augmented Generation research
+- **vero-eval**: Comprehensive RAG evaluation framework
+- **Ollama**: Local LLM serving made possible
+- **Neo4j**: World's leading graph database
+- **FastAPI**: Modern Python web framework
 
+## 📞 Support & Community
+
+- 📚 [Documentation](docs/)
+- 🐛 [Bug Reports](https://github.com/your-org/redbot/issues)
+- 💬 [Discussions](https://github.com/your-org/redbot/discussions)
+- 📧 Contact: your-email@example.com
 
 ---
 
-**Built with ❤️ by the Research Assistant Team**
+<div align="center">
 
-*Transforming research discovery through intelligent graph-based retrieval and generation*
+**Built with ❤️ for researchers and AI enthusiasts**
+
+[![Star](https://img.shields.io/github/stars/kliewerdaniel/redbot.svg?style=social)](https://github.com/kliewerdaniel/redbot)
+[![Fork](https://img.shields.io/github/forks/your-org/redbot.svg?style=social)](https://github.com/kliewerdaniel/redbot)
+
+</div>

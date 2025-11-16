@@ -1,50 +1,31 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import ChatInterface from "@/components/ChatInterface";
-import SystemStatus from "@/components/SystemStatus";
+import dynamic from 'next/dynamic'
 
-export default function Home() {
-  const [showStatus, setShowStatus] = useState(false);
-
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      <div className="flex-1 max-w-4xl mx-auto p-4">
-        <header className="mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Research Assistant
-              </h1>
-              <p className="text-gray-600 mt-1">
-                GraphRAG-powered academic research assistant with vero-eval evaluation
-              </p>
+// Dynamically import Chat with SSR disabled to prevent hydration mismatches
+const Chat = dynamic(() => import('@/components/Chat'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex flex-col h-screen max-w-4xl mx-auto p-2 sm:p-4">
+      <div className="flex-1 flex flex-col bg-card/80 backdrop-blur-sm border rounded-xl shadow-sm">
+        <div className="flex-1 flex flex-col space-y-4 px-6 pb-6">
+          <div className="flex-1 overflow-y-auto space-y-4 p-4 border rounded-lg bg-muted relative">
+            <div className="text-center text-muted-foreground mt-8">
+              Loading chat interface...
             </div>
-            <button
-              onClick={() => setShowStatus(!showStatus)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              System Status
-            </button>
           </div>
-        </header>
-
-        {showStatus && (
-          <div className="mb-6">
-            <SystemStatus />
-          </div>
-        )}
-
-        <div className="bg-white rounded-lg shadow-sm border">
-          <ChatInterface />
         </div>
-
-        <footer className="mt-8 text-center text-sm text-gray-500">
-          <p>
-            Powered by Neo4j GraphRAG, Ollama, and vero-eval evaluation framework
-          </p>
-        </footer>
       </div>
     </div>
-  );
+  )
+})
+
+export default function Home() {
+  return (
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 py-8">
+        <Chat />
+      </div>
+    </div>
+  )
 }

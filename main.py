@@ -13,11 +13,12 @@ import os
 from pathlib import Path
 from datetime import datetime
 import json
+import uuid
 
 # Import our custom modules
-from scripts.reasoning_agent import PersonaReasoningAgent
-from scripts.hybrid_retriever import HybridRetriever
-from scripts.ingest_research_data import ResearchGraphBuilder
+from scripts.reddit_reasoning_agent import RedditReasoningAgent
+from scripts.reddit_retriever import RedditRetriever
+from scripts.ingest_reddit_data import RedditGraphBuilder
 from evaluation.run_evaluation import Evaluator
 
 # Initialize components
@@ -37,10 +38,15 @@ reasoning_agent = None
 retriever = None
 evaluator = None
 
+# Simple in-memory session storage for chat history
+# In production, this should be stored in Redis or a database
+chat_sessions: Dict[str, List[Dict[str, str]]] = {}
+
 class QueryRequest(BaseModel):
     query: str
     chat_history: Optional[List[Dict[str, str]]] = []
     persona_override: Optional[str] = None
+    session_id: Optional[str] = None
 
 class QueryResponse(BaseModel):
     response: str
@@ -49,6 +55,7 @@ class QueryResponse(BaseModel):
     retrieval_method: Optional[str]
     retrieval_performed: bool
     sources: List[Dict[str, str]]
+    session_id: Optional[str] = None
 
 class IngestionRequest(BaseModel):
     directory: str = "data/research_papers"
@@ -62,7 +69,7 @@ class SystemStatus(BaseModel):
     neo4j_connected: bool
     ollama_ready: bool
     redis_connected: bool
-    paper_count: int
+    reddit_count: int
     evaluation_count: int
 
 @app.on_event("startup")
@@ -71,8 +78,8 @@ async def startup_event():
     global reasoning_agent, retriever, evaluator
 
     try:
-        reasoning_agent = PersonaReasoningAgent()
-        retriever = HybridRetriever()
+        reasoning_agent = RedditReasoningAgent()
+        retriever = RedditRetriever()
         evaluator = Evaluator(
             test_dataset_path=Path("evaluation/datasets/research_assistant_v1.json"),
             trace_db_path=Path("evaluation/trace.db")
@@ -93,19 +100,43 @@ async def chat(request: QueryRequest) -> QueryResponse:
         raise HTTPException(status_code=503, detail="Reasoning agent not initialized")
 
     try:
+        # Session management: Get or create session
+        session_id = request.session_id
+        if not session_id or session_id not in chat_sessions:
+            session_id = str(uuid.uuid4())
+            chat_sessions[session_id] = []
+
+        # Use provided chat_history for backward compatibility, or build from session
+        if request.chat_history and len(request.chat_history) > len(chat_sessions[session_id]):
+            # If user provided more complete history, use it and update session
+            chat_history_to_use = request.chat_history
+            chat_sessions[session_id] = request.chat_history.copy()
+        else:
+            # Use session history
+            chat_history_to_use = chat_sessions[session_id].copy()
+
+        # Add current user message if not already present
+        user_message = {"role": "user", "content": request.query}
+        if not chat_history_to_use or chat_history_to_use[-1] != user_message:
+            chat_history_to_use.append(user_message)
+
         # Generate response
         result = reasoning_agent.generate_response(
             request.query,
-            request.chat_history
+            chat_history_to_use
         )
+
+        # Add both user and assistant messages to session history
+        chat_sessions[session_id].append(user_message)
+        chat_sessions[session_id].append({"role": "assistant", "content": result['response']})
 
         # Format sources for frontend
         sources = []
         for doc in result['context_used']:
             sources.append({
-                'title': str(doc.get('title', 'Unknown')),
-                'authors': ', '.join(doc.get('authors', [])) if doc.get('authors') else 'Unknown',
-                'year': str(doc.get('year', 'Unknown')),
+                'title': f"{doc.get('author', 'Unknown')} in r/{doc.get('subreddit', 'Unknown')}",
+                'authors': doc.get('author', 'Unknown'),
+                'year': doc.get('created_utc', 'Unknown')[:10] if doc.get('created_utc') else 'Unknown',
                 'relevance_score': f"{doc.get('relevance_score', 0.0):.3f}",
                 'retrieval_method': str(doc.get('retrieval_method', 'unknown'))
             })
@@ -116,7 +147,8 @@ async def chat(request: QueryRequest) -> QueryResponse:
             quality_grade=result['quality_grade'],
             retrieval_method=result.get('retrieval_method'),
             retrieval_performed=result.get('retrieval_performed', False),
-            sources=sources
+            sources=sources,
+            session_id=session_id
         )
 
     except Exception as e:
@@ -163,12 +195,12 @@ async def get_system_status() -> SystemStatus:
     try:
         # Check Neo4j connection
         neo4j_connected = False
-        paper_count = 0
+        reddit_count = 0
         try:
             if retriever and retriever.driver:
                 with retriever.driver.session() as session:
-                    result = session.run("MATCH (p:Paper) RETURN count(p) as count")
-                    paper_count = result.single()["count"]
+                    result = session.run("MATCH (r:RedditContent) RETURN count(r) as count")
+                    reddit_count = result.single()["count"]
                     neo4j_connected = True
         except:
             pass
@@ -201,7 +233,7 @@ async def get_system_status() -> SystemStatus:
             neo4j_connected=neo4j_connected,
             ollama_ready=ollama_ready,
             redis_connected=redis_connected,
-            paper_count=paper_count,
+            reddit_count=reddit_count,
             evaluation_count=evaluation_count
         )
 
@@ -223,23 +255,22 @@ async def get_evaluation_results():
 
 # Background tasks
 def run_ingestion(directory: str, recreate_indexes: bool):
-    """Run paper ingestion in background"""
+    """Run Reddit data ingestion in background"""
     print(f"Starting background ingestion from {directory}")
 
     try:
-        builder = ResearchGraphBuilder()
-        papers_dir = Path(directory)
+        builder = RedditGraphBuilder()
 
         if recreate_indexes:
             # Drop existing indexes first
             try:
                 with builder.driver.session() as session:
-                    session.run("DROP INDEX paper_abstracts IF EXISTS")
+                    session.run("DROP INDEX reddit_content_embeddings IF EXISTS")
             except:
                 pass
             builder.create_vector_indexes()
 
-        builder.ingest_directory(papers_dir)
+        builder.ingest_reddit_directory(Path(directory))
 
         if recreate_indexes:
             builder.create_vector_indexes()

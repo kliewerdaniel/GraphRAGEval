@@ -11,49 +11,49 @@ current_dir = Path(__file__).parent
 if str(current_dir.parent) not in sys.path:
     sys.path.insert(0, str(current_dir.parent))
 
-from scripts.hybrid_retriever import HybridRetriever
+from scripts.reddit_retriever import RedditRetriever
 
 # Load environment variables
 load_dotenv()
 
-class PersonaReasoningAgent:
+class RedditReasoningAgent:
     def __init__(self,
                  persona_config_path: Path = Path("data/persona.json"),
-                 ollama_model: str = "mistral"):
+                 ollama_model: str = "llama3.2:3b"):
 
         self.persona_config_path = persona_config_path
         self.persona_config = self._load_persona(persona_config_path)
         self.ollama_model = ollama_model
-        self.retriever = HybridRetriever(ollama_model=ollama_model)
+        self.retriever = RedditRetriever(ollama_model=ollama_model)
 
     def _load_persona(self, config_path: Path) -> Dict[str, Any]:
         """Load persona configuration with RLHF thresholds"""
 
         if not config_path.exists():
-            # Create default persona configuration
+            # Create default persona configuration for Reddit assistant
             default_config = {
-                "name": "Research Assistant",
-                "description": "A helpful academic research assistant with access to paper database",
-                "system_prompt_template": """You are a research assistant helping with academic and technical queries.
-You have access to a database of research papers and can retrieve relevant information to provide accurate, well-supported answers.
+                "name": "Reddit Research Assistant",
+                "description": "A helpful assistant that analyzes Reddit discussions and conversations",
+                "system_prompt_template": """You are a Reddit research assistant analyzing online discussions and conversations.
+You have access to a database of Reddit comments and posts and can retrieve relevant discussions to provide insights.
 
 When answering questions:
-1. Always cite specific papers and authors when making claims
-2. Be precise and factual - avoid speculation
-3. Explain technical concepts clearly
-4. If you don't have enough information, say so rather than guessing
+1. Always cite specific Reddit users, subreddits, and discussion contexts
+2. Be balanced and represent different viewpoints from the discussions
+3. Explain concepts based on community discussions
+4. If you don't have enough information from discussions, say so
 5. Organize your responses with clear structure when appropriate
 
-Available context from research papers:
+Available context from Reddit discussions:
 {context}
 
 Question: {query}""",
                 "rlhf_thresholds": {
                     "retrieval_required": 0.6,
                     "minimum_context_overlap": 0.3,
-                    "formality_level": 0.7,
-                    "technical_detail_level": 0.8,
-                    "citation_requirement": 0.9
+                    "formality_level": 0.6,
+                    "technical_detail_level": 0.7,
+                    "citation_requirement": 0.8
                 },
                 "recent_success_rate": 0.8
             }
@@ -71,26 +71,25 @@ Question: {query}""",
     def should_retrieve_context(self, query: str) -> bool:
         """
         Decide if we need to retrieve context based on:
-        1. Query complexity and technical nature
+        1. Query complexity and discussion-related nature
         2. RLHF confidence threshold
         3. Recent retrieval success rate
         """
 
         # Analyze query characteristics
-        technical_indicators = [
-            'paper', 'research', 'study', 'findings', 'methodolog',
-            'algorithm', 'experiment', 'results', 'technique',
-            'approach', 'framework', 'model', 'analysis'
+        discussion_indicators = [
+            'reddit', 'discussion', 'opinion', 'people think', 'community',
+            'thread', 'comment', 'post', 'subreddit', 'r/', 'users say'
         ]
 
-        research_keywords = ['what', 'how', 'why', 'compare', 'similar', 'different']
+        research_keywords = ['what do', 'how do', 'why do', 'compare', 'similar', 'different']
 
-        # Check for technical content
+        # Check for discussion-related content
         query_lower = query.lower()
-        has_technical_terms = any(term in query_lower for term in technical_indicators)
+        has_discussion_terms = any(term in query_lower for term in discussion_indicators)
         has_research_question = any(kw in query_lower.split() for kw in research_keywords)
 
-        needs_retrieval = has_technical_terms or has_research_question
+        needs_retrieval = has_discussion_terms or has_research_question
 
         # Check RLHF threshold
         confidence_threshold = self.persona_config['rlhf_thresholds']['retrieval_required']
@@ -165,7 +164,7 @@ Question: {query}""",
         if context:
             base_template = base_template.replace("{context}", context)
         else:
-            base_template = base_template.replace("{context}", "No specific research context available.")
+            base_template = base_template.replace("{context}", "No specific Reddit discussion context available.")
 
         # Insert query placeholder (will be replaced by ollama)
         if "{query}" not in base_template:
@@ -180,45 +179,48 @@ Question: {query}""",
         # Add persona modifiers based on RLHF values
         formality = self.persona_config['rlhf_thresholds']['formality_level']
         if formality > 0.7:
-            base_template += "\n\nUse academic, formal language with proper citations."
+            base_template += "\n\nUse formal, analytical language when discussing Reddit discussions."
         elif formality < 0.4:
-            base_template += "\n\nUse conversational language and explain concepts simply."
+            base_template += "\n\nUse conversational language similar to Reddit discussions."
 
         technical_detail = self.persona_config['rlhf_thresholds']['technical_detail_level']
         if technical_detail > 0.8:
-            base_template += "\n\nInclude technical details and methodology information when relevant."
+            base_template += "\n\nInclude detailed analysis of discussion patterns and user behavior when relevant."
         elif technical_detail < 0.5:
-            base_template += "\n\nFocus on high-level concepts and avoid deep technical details."
+            base_template += "\n\nFocus on summarizing general opinions and trends."
 
         citation_req = self.persona_config['rlhf_thresholds']['citation_requirement']
         if citation_req > 0.8:
-            base_template += "\n\nALWAYS cite specific papers, authors, and years when making factual claims."
+            base_template += "\n\nALWAYS cite specific Reddit users, subreddits, and discussion links when making claims."
         elif citation_req < 0.5:
-            base_template += "\n\nYou can provide general information without requiring specific citations."
+            base_template += "\n\nYou can provide general summaries without requiring specific citations."
 
         return base_template
 
     def _format_context(self, context_docs: List[Dict[str, Any]]) -> str:
-        """Format retrieved documents for context"""
+        """Format retrieved Reddit discussions for context"""
         if not context_docs:
             return ""
 
         formatted = []
         for i, doc in enumerate(context_docs, 1):
-            paper_info = f"""
-Paper {i}: "{doc['title']}"
-Authors: {', '.join(doc.get('authors', ['Unknown']))}
-Year: {doc.get('year', 'Unknown')}
-Abstract: {doc.get('abstract', 'No abstract available')[:300]}...
-Concepts: {', '.join(doc.get('concepts', [])[:3])}
-Retrieval Score: {doc.get('relevance_score', 0):.3f}
+            reddit_info = f"""
+Reddit Discussion {i}:
+User: {doc['author']}
+Subreddit: r/{doc['subreddit']}
+Score: {doc.get('score', 0)}
+Created: {doc.get('created_utc', 'Unknown')}
+Topics: {', '.join(doc.get('topics', [])[:3])}
+Content: {doc.get('content_preview', doc.get('content', ''))[:400]}
+Sentiment: {doc.get('sentiment', 'neutral')}
+Retrieval Method: {doc.get('retrieval_method', 'unknown')}
 """
-            formatted.append(paper_info.strip())
+            formatted.append(reddit_info.strip())
 
         return "\n\n".join(formatted)
 
     def _format_chat_history(self, chat_history: Optional[List[Dict[str, str]]]) -> Optional[str]:
-        """Format chat history for ollama context"""
+        """Format chat history for inclusion in system prompt"""
         if not chat_history:
             return None
 
@@ -235,49 +237,52 @@ Retrieval Score: {doc.get('relevance_score', 0):.3f}
     def _grade_response(self, query: str, response: str, context: List[Dict[str, Any]]) -> float:
         """
         RLHF grading: 0 (needs improvement) to 1 (excellent).
-        Heuristic-based grading (in production, this would be human feedback).
+        Heuristic-based grading for Reddit discussions.
         """
 
         if not response or len(response.strip()) < 10:
             return 0.1  # Too short or empty
 
-        # Check for factual claims vs available context
-        claims_score = self._evaluate_factuality(response, context)
-        completeness_score = min(1.0, len(response.split()) / 200)  # Length appropriateness
+        # Check for community insights vs available context
+        insights_score = self._evaluate_discussion_insights(response, context)
+        completeness_score = min(1.0, len(response.split()) / 150)  # Length appropriateness (shorter for Reddit)
         structure_score = self._evaluate_structure(response)
 
         # Weighted score
         overall_score = (
-            0.5 * claims_score +
+            0.5 * insights_score +
             0.3 * completeness_score +
             0.2 * structure_score
         )
 
         return min(1.0, max(0.0, overall_score))
 
-    def _evaluate_factuality(self, response: str, context: List[Dict[str, Any]]) -> float:
-        """Check if response claims are supported by retrieved context"""
+    def _evaluate_discussion_insights(self, response: str, context: List[Dict[str, Any]]) -> float:
+        """Check if response provides insights about discussions"""
 
         if not context:
             return 0.3  # Some baseline if no context needed
 
         response_lower = response.lower()
-        claims_supported = 0
-        total_claims = 0
+        insights_supported = 0
+        total_insights = 0
 
-        # Simple heuristic: Check for paper mentions vs our context
-        paper_titles = [doc['title'].lower() for doc in context]
-        mentioned_papers = sum(1 for title in paper_titles if title in response_lower)
+        # Check for mention of users/subreddits from context
+        reddit_authors = [doc['author'].lower() for doc in context]
+        reddit_subreddits = [doc['subreddit'].lower() for doc in context]
 
-        # Bonus for citation patterns
-        has_citations = any(pattern in response_lower for pattern in [
-            'according to', 'as stated in', 'research shows', 'study found', 'paper demonstrates'
+        mentioned_users = sum(1 for author in reddit_authors if author in response_lower)
+        mentioned_subs = sum(1 for sub in reddit_subreddits if f"r/{sub}" in response_lower)
+
+        # Bonus for discussion pattern analysis
+        has_discussion_terms = any(pattern in response_lower for pattern in [
+            'discussion shows', 'people think', 'community believes', 'reddit users', 'based on comments'
         ])
 
-        base_score = min(0.8, mentioned_papers * 0.3)  # Up to 0.8 for paper mentions
-        citation_bonus = 0.2 if has_citations else 0.0
+        base_score = min(0.7, (mentioned_users + mentioned_subs) * 0.2)  # Up to 0.7 for mentions
+        insight_bonus = 0.3 if has_discussion_terms else 0.0
 
-        return min(1.0, base_score + citation_bonus)
+        return min(1.0, base_score + insight_bonus)
 
     def _evaluate_structure(self, response: str) -> float:
         """Evaluate response structure and readability"""
@@ -294,9 +299,9 @@ Retrieval Score: {doc.get('relevance_score', 0):.3f}
         if has_lists:
             score += 0.1
 
-        # Reasonable length
+        # Reasonable length for Reddit analysis
         word_count = len(response.split())
-        if 50 <= word_count <= 500:
+        if 30 <= word_count <= 400:
             score += 0.2
 
         return min(1.0, score)
@@ -339,13 +344,13 @@ Retrieval Score: {doc.get('relevance_score', 0):.3f}
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Test reasoning agent")
+    parser = argparse.ArgumentParser(description="Test Reddit reasoning agent")
     parser.add_argument("--query", type=str, help="Query to test")
     parser.add_argument("--history", type=str, help="JSON chat history")
 
     args = parser.parse_args()
 
-    agent = PersonaReasoningAgent()
+    agent = RedditReasoningAgent()
 
     if args.query:
         chat_history = []
@@ -358,7 +363,7 @@ if __name__ == "__main__":
         result = agent.generate_response(args.query, chat_history)
 
         print(f"Query: {args.query}")
-        print(f"Retrieved context: {len(result['context_used'])} papers")
+        print(f"Retrieved context: {len(result['context_used'])} discussions")
         print(f"Quality grade: {result['quality_grade']:.2f}")
         print(f"Retrieval method: {result.get('retrieval_method', 'none')}")
         print()
@@ -366,8 +371,10 @@ if __name__ == "__main__":
         print(result['response'])
         print()
         if result['context_used']:
-            print("Sources:")
+            print("Reddit Sources:")
             for i, doc in enumerate(result['context_used'], 1):
-                print(f"{i}. {doc['title']} (Score: {doc.get('relevance_score', 0):.3f})")
+                print(f"{i}. {doc['author']} in r/{doc['subreddit']} (Score: {doc.get('relevance_score', 0):.3f})")
+                if doc.get('content_preview'):
+                    print(f"   Preview: {doc['content_preview'][:100]}...")
     else:
         print("Provide a query with --query")

@@ -14,3 +14,4 @@ pandas
 redis
 pinecone-client
 python-multipart
+nltk
